@@ -1,0 +1,281 @@
+
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+/**
+ *
+ * <strong>Author:</strong> Tator & SeaSee
+ * <p>
+ * <strong>Version:</strong> win.1.10
+ */
+public class Live extends JPanel implements MouseListener, MouseMotionListener, KeyListener, Runnable {
+
+    private int h = 0, w = 0;
+    public static boolean[][] a;
+    public static boolean active = true;
+    int t, o = 0;
+    Thread thread;
+    Point one;
+    Point two;
+    ArrayList<hold> holdR, holdA;
+    int max = 0;
+    int birth = 3, die = 4;
+    boolean New = false;
+    int speed = 0;
+
+    public Live() {
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        addKeyListener(this);
+        setSize(75, 75);
+        setFocusable(true);
+        requestFocusInWindow();
+        a = new boolean[752][752];
+        repaint();
+    }
+
+    public void st() {
+        thread = new Thread(this);
+        thread.start();
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (o == 0) {
+            st();
+            o++;
+        }
+        
+        setBackground(Color.black);
+        if (New || h != getSize().height || w != getSize().width) {
+            New = false;
+            h = getSize().height;
+            w = getSize().width;
+            a = new boolean[w + 2][h + 2];
+            holdA = new ArrayList<>();
+        }
+        g.setColor(Color.blue);
+           g.drawString("b: "+birth+" d: " +die +" s: "+speed, 100, 100);
+        for (int q = 1; q <= w + 1; q++) {
+            for (int r = 1; r <= h + 1; r++) {
+                /*int m = (int)(Math.random()*6);
+                 switch(m){
+                 case 0:
+                 g.setColor(Color.BLUE);
+                 break;
+                 case 1:
+                 g.setColor(Color.red);
+                 break;
+                 case 2:
+                 g.setColor(Color.GREEN);
+                 break;
+                 case 3:
+                 g.setColor(Color.YELLOW);
+                 break;
+                 case 4:
+                 g.setColor(Color.CYAN);
+                 break;
+                 case 5:
+                 g.setColor(Color.WHITE);
+                 }*/
+
+                g.setColor(Color.ORANGE);
+                if (a[q][r]) {
+                    g.drawLine(q, r, q, r);
+                }
+            }
+
+        }
+    }
+    /*
+     public boolean same(int q, int r) {
+     try {
+     for (hold hold : holdA) {
+     if (hold.x == q && hold.y == r) {
+     return false;
+     }
+     }
+     } catch (Exception e) {
+     }
+     return true;
+     }*/
+
+    public void increment() {
+        int c = 0;
+        holdR = new ArrayList<>();
+        holdA = new ArrayList<>();
+        for (int q = 1; q <= w; q++) {
+            for (int r = 1; r <= h; r++) {
+                c = 0;
+
+                if (a[q - 1][r - 1]) {
+                    c++;
+                }
+                if (a[q - 1][r]) {
+                    c++;
+                }
+                try{
+                if (a[q - 1][r + 1]) {
+                    c++;
+                }
+                }catch(Exception m){}
+                if (a[q][r + 1]) {
+                    c++;
+                }
+                if (a[q + 1][r + 1]) {
+                    c++;
+                }
+                if (a[q + 1][r]) {
+                    c++;
+                }
+                if (a[q + 1][r - 1]) {
+                    c++;
+                }
+                if (a[q][r - 1]) {
+                    c++;
+                }
+                if (!a[q][r] && (c == birth)) {
+                    holdA.add(new hold(q, r));
+                }
+                if (a[q][r] && (c >= die)) {
+                    holdR.add(new hold(q, r));
+                }
+            }
+        }
+        for (hold s : holdA) {
+            a[s.x][s.y] = true;
+        }
+        for (hold s : holdR) {
+            a[s.x][s.y] = false;
+        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        one = e.getPoint();
+        int y = one.y;
+        int x = one.x;
+        a[x][y] = true;
+        repaint();
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        active = true;
+        thread.resume();
+        repaint();
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        active = false;
+        thread.suspend();
+        repaint();
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //n
+        if(e.getKeyCode()==78){
+            New = true;
+            repaint();
+            return;
+        }
+        //up arrow
+        if (e.getKeyCode() == 38) {
+            die++;
+            if(die == 9)die = 8;
+        }else 
+            //down arrow
+            if(e.getKeyCode() == 40){
+            die--;
+            if(die == 0)die= 1;
+            
+        }
+        //right arrow  
+        if(e.getKeyCode()==39 ){
+            active =true;
+            thread.resume();
+            repaint();
+        }else 
+            //left arrow or space
+            if(e.getKeyCode()==37|| e.getKeyCode() == 32){
+            active = false;
+            thread.suspend();
+            repaint();
+        }
+        //1 2 3 4 5 6 7 8
+        if ((((int) e.getKeyChar()) - 48) >= 1 && (((int) e.getKeyChar()) - 48) <= 8) {
+            birth = ((int) e.getKeyChar()) - 48;
+        }
+        //d
+        if(e.getKeyCode()==68){
+            birth= 3;
+            die = 4;
+        }
+        //page up
+        if(e.getKeyCode()==33){
+            speed +=10;
+        }
+        //page down
+        if(e.getKeyCode() == 34){
+            speed -=10;
+            if(speed <= 0)speed = 0;
+        }
+        //end
+        if(e.getKeyCode()==35){
+            speed = 00;
+        }
+        //System.out.println(e.getKeyCode());
+        repaint();
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+    }
+
+    @Override
+    public void run() {
+        while (active) {
+            increment();
+            repaint();
+            try {
+                Thread.sleep(speed);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        two = e.getPoint();
+        int y = two.y;
+        int x = two.x;
+        try{
+        a[x][y] = true;
+        }catch(Exception m){}
+        repaint();
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+
+    }
+
+}
