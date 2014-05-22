@@ -21,8 +21,9 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
     Point two;
     ArrayList<hold> holdR, holdA;
     int max = 0;
-    int birth = 3, die = 4;
+    int birth = 3, die = 4,overing =7;
     boolean New = false;
+    boolean over = false;
     int speed = 0;
 
     public Live() {
@@ -48,7 +49,7 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
             st();
             o++;
         }
-        
+
         setBackground(Color.black);
         if (New || h != getSize().height || w != getSize().width) {
             New = false;
@@ -57,8 +58,8 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
             a = new boolean[w + 2][h + 2];
             holdA = new ArrayList<>();
         }
-        g.setColor(Color.blue);
-           g.drawString("b: "+birth+" d: " +die +" s: "+speed, 100, 100);
+        g.setColor(Color.green);
+        g.drawString("b: " + birth + " d: " + die + " s: " + speed, 100, 100);
         for (int q = 1; q <= w + 1; q++) {
             for (int r = 1; r <= h + 1; r++) {
                 /*int m = (int)(Math.random()*6);
@@ -117,11 +118,12 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
                 if (a[q - 1][r]) {
                     c++;
                 }
-                try{
-                if (a[q - 1][r + 1]) {
-                    c++;
+                try {
+                    if (a[q - 1][r + 1]) {
+                        c++;
+                    }
+                } catch (Exception m) {
                 }
-                }catch(Exception m){}
                 if (a[q][r + 1]) {
                     c++;
                 }
@@ -142,6 +144,11 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
                 }
                 if (a[q][r] && (c >= die)) {
                     holdR.add(new hold(q, r));
+                }
+                if (over) {
+                    if (a[q][r] && (c >= overing)) {
+                        holdR.add(new hold(q, r));
+                    }
                 }
             }
         }
@@ -192,54 +199,69 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
     @Override
     public void keyPressed(KeyEvent e) {
         //n
-        if(e.getKeyCode()==78){
+        if (e.getKeyCode() == 0x4e) {
             New = true;
             repaint();
             return;
         }
         //up arrow
-        if (e.getKeyCode() == 38) {
+        if (e.getKeyCode() == 0x26) {
             die++;
-            if(die == 9)die = 8;
-        }else 
-            //down arrow
-            if(e.getKeyCode() == 40){
+            if (die == 9) {
+                die = 8;
+            }
+        } else //down arrow
+        if (e.getKeyCode() == 0x28) {
             die--;
-            if(die == 0)die= 1;
-            
+            if (die == 0) {
+                die = 1;
+            }
+
+        }
+        if (e.getKeyCode() == 0x27) {
+            overing++;
+            if (overing == 9) {
+                overing = 8;
+            }
+        } else //down arrow
+        if (e.getKeyCode() == 0x2f) {
+            overing--;
+            if (overing == 0) {
+                overing = 1;
+            }
+
+        }
+        if(e.getKeyCode() ==0x4f){
+            over = !over;
         }
         //right arrow  
-        if(e.getKeyCode()==39 ){
-            active =true;
-            thread.resume();
-            repaint();
-        }else 
-            //left arrow or space
-            if(e.getKeyCode()==37|| e.getKeyCode() == 32){
-            active = false;
+        if (e.getKeyCode() == 0x20) {
+            active = !active;
             thread.suspend();
             repaint();
         }
         //1 2 3 4 5 6 7 8
-        if ((((int) e.getKeyChar()) - 48) >= 1 && (((int) e.getKeyChar()) - 48) <= 8) {
-            birth = ((int) e.getKeyChar()) - 48;
+        if ((((int) e.getKeyChar()) - 0x30) >= 1 && (((int) e.getKeyChar()) - 0x30) <= 8) {
+            birth = ((int) e.getKeyChar()) - 0x30;
         }
         //d
-        if(e.getKeyCode()==68){
-            birth= 3;
+        if (e.getKeyCode() == 68) {
+            birth = 3;
             die = 4;
         }
         //page up
-        if(e.getKeyCode()==33){
-            speed +=10;
+        if (e.getKeyCode() == 33) {
+            speed += 10;
         }
         //page down
-        if(e.getKeyCode() == 34){
-            speed -=10;
-            if(speed <= 0)speed = 0;
+        if (e.getKeyCode() == 34) {
+            speed -= 10;
+            if (speed <= 0) {
+                speed = 0;
+            }
         }
         //end
-        if(e.getKeyCode()==35){
+        if (e.getKeyCode() == 35) {
             speed = 00;
         }
         //System.out.println(e.getKeyCode());
@@ -267,9 +289,10 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
         two = e.getPoint();
         int y = two.y;
         int x = two.x;
-        try{
-        a[x][y] = true;
-        }catch(Exception m){}
+        try {
+            a[x][y] = true;
+        } catch (Exception m) {
+        }
         repaint();
     }
 
