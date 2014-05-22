@@ -25,6 +25,10 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
     boolean New = false;
     boolean over = false;
     int speed = 0;
+    int[][] gun = {
+        {5,6,5,6,5 ,6 ,7 ,4 ,8 ,3 ,9 ,3 ,9 ,6 ,4 ,8 ,5 ,6 ,7 ,6 ,3 ,4 ,5 ,3 ,4 ,5 ,2 ,6 ,1 ,2 ,6 ,7 ,2 ,3 ,2 ,3 },
+        {1,1,2,2,11,11,11,12,12,13,13,14,14,15,16,16,17,17,17,18,20,20,20,21,21,21,22,22,24,24,24,24,34,34,35,35}
+    };
 
     public Live() {
         addMouseListener(this);
@@ -171,12 +175,14 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
         int x = one.x;
         a[x][y] = true;
         active = false;
+        thread.suspend();
         repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         active = true;
+        thread.resume();
         repaint();
     }
 
