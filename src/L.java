@@ -11,7 +11,7 @@ import javax.swing.*;
  * <strong>Version:</strong> win.1.3
  */public class L extends JApplet {
      JFrame frame;
-     Live Live;
+     Live Live; 
     
     public void init() {
         //cb = new cb(); 
