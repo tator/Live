@@ -24,10 +24,11 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
     int birth = 3, die = 4, overing = 1;
     boolean New = false;
     boolean over = false;
+    boolean up = false;
     int speed = 0;
     int[][] gun = {
-        {5,6,5,6,5 ,6 ,7 ,4 ,8 ,3 ,9 ,3 ,9 ,6 ,4 ,8 ,5 ,6 ,7 ,6 ,3 ,4 ,5 ,3 ,4 ,5 ,2 ,6 ,1 ,2 ,6 ,7 ,2 ,3 ,2 ,3 },
-        {1,1,2,2,11,11,11,12,12,13,13,14,14,15,16,16,17,17,17,18,20,20,20,21,21,21,22,22,24,24,24,24,34,34,35,35}
+        {5, 6, 5, 6,  5,  6,  7,  4,  8,  3,  9,  3,  9,  6,  4,  8,  5,  6,  7,  6,  3,  4,  5,  3,  4,  5,  2,  6,  1,  2,  6,  7,  3,  4,  3,  4},
+        {1, 1, 2, 2, 11, 11, 11, 12, 12, 13, 13, 14, 14, 15, 16, 16, 17, 17, 17, 18, 21, 21, 21, 22, 22, 22, 23, 23, 25, 25, 25, 25, 35, 35, 36, 36}
     };
 
     public Live() {
@@ -173,15 +174,35 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
         one = e.getPoint();
         int y = one.y;
         int x = one.x;
-        a[x][y] = true;
-        active = false;
+        if (e.getButton() == 1) {
+            a[x][y] = true;
+        }
+        if (e.getButton() == 3&&!up) {
+            for (int q = 0; q < gun[0].length; q++) {
+                a[gun[0][q] + x][gun[1][q] + y] = true;
+            }
+        }
+        if (e.getButton() == 2&&!up) {
+            for (int q = 0 ; q < gun[0].length; q++) {
+                a[(10-gun[0][q]) + x][gun[1][q] + y] = true;
+            }
+        }
+        if (e.getButton() == 2&&up) {
+            for (int q = 0; q < gun[0].length; q++) {
+                a[gun[0][q] + x][10-gun[1][q] + y] = true;
+            }
+        }
+        if (e.getButton() == 3&&up) {
+            for (int q = 0 ; q < gun[0].length; q++) {
+                a[(10-gun[0][q]) + x][(10-gun[1][q]) + y] = true;
+            }
+        }
         thread.suspend();
         repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        active = true;
         thread.resume();
         repaint();
     }
@@ -226,6 +247,10 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
             }
 
         }
+        if(e.getKeyChar()=='u'){
+            up = !up;
+        }
+        
         if (e.getKeyCode() == 0x27) {
             overing++;
             if (overing == 9) {
@@ -242,10 +267,14 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
         if (e.getKeyCode() == 0x4f) {
             over = !over;
         }
-        //right arrow  
         if (e.getKeyCode() == 0x20) {
             active = !active;
-            thread.suspend();
+            if (active) {
+                thread.resume();
+            }
+            if (!active) {
+                thread.suspend();
+            }
             repaint();
         }
         //1 2 3 4 5 6 7 8
@@ -297,10 +326,13 @@ public class Live extends JPanel implements MouseListener, MouseMotionListener, 
         two = e.getPoint();
         int y = two.y;
         int x = two.x;
-        try {
-            a[x][y] = true;
-        } catch (Exception m) {
+        if (e.getButton() == 0) {
+            try {
+                a[x][y] = true;
+            } catch (Exception m) {
+            }
         }
+        
         repaint();
     }
 
