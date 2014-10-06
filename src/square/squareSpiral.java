@@ -7,6 +7,7 @@ import javax.swing.*;
 public class squareSpiral extends JPanel implements KeyListener {
 
     int v;
+    Int z =360
     int e = 2;
     int n = 100;
     protected double[][][] a;
@@ -118,7 +119,7 @@ public class squareSpiral extends JPanel implements KeyListener {
     }
 
     public double fraction(int f, double x1, double x2) {
-        return (((f - 1) * x1 + x2) / (double) f);
+        return (((z-f) * x1 + (f*x2)) / (double) z);
     }
 
     @Override
@@ -131,21 +132,27 @@ public class squareSpiral extends JPanel implements KeyListener {
         if (k.getKeyCode() == 0x26) {
             if (d) {
                 dd++;
+                if(dd>z){
+                  dd=z;
+}
                 return;
             }
             e++;
+if(e>z){
+e=z;
+}
         }
         if (k.getKeyCode() == 0x28) {
             if (d) {
                 dd--;
-                if (dd == 1) {
-                    dd = 2;
+                if (dd == 0) {
+                    dd = 1;
                 }
                 return;
             }
             e--;
-            if (e == 1) {
-                e = 2;
+            if (e == 0) {
+                e = 1;
             }
         }
         if (k.getKeyCode() == 0x30) {
